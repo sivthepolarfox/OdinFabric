@@ -15,7 +15,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents
-import net.minecraft.network.protocol.game.ClientboundSoundPacket
 import net.minecraft.network.protocol.game.ClientboundSystemChatPacket
 import net.minecraft.network.protocol.game.ClientboundTakeItemEntityPacket
 import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket
@@ -71,10 +70,10 @@ object EventDispatcher {
             ) SecretPickupEvent.Item(entity).postAndCatch()
         }
 
-        onReceive<ClientboundSoundPacket> {
-            if (!DungeonUtils.inClear) return@onReceive
-            if (sound.value().equalsOneOf(SoundEvents.BAT_HURT, SoundEvents.BAT_DEATH) && volume == 0.1f)
-                SecretPickupEvent.Bat(this).postAndCatch()
+        on<PlaySoundEvent> {
+            if (!DungeonUtils.inClear) return@on
+            if (sound.equalsOneOf(SoundEvents.BAT_HURT, SoundEvents.BAT_DEATH) && volume == 0.1f)
+                SecretPickupEvent.Bat(pos).postAndCatch()
         }
 
         onSend<ServerboundUseItemOnPacket> {

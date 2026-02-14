@@ -15,7 +15,6 @@
     "mixins.BossBarHealthOverlayMixin",
     "mixins.ChatListenerMixin",
     "mixins.ChatScreenMixin",
-    "mixins.ClientCommonPacketListenerImplMixin",
     "mixins.ClientLevelMixin",
     "mixins.ClientPacketListenerMixin",
     "mixins.EntityRendererMixin",
@@ -25,7 +24,8 @@
     "mixins.LocalPlayerMixin",
     "mixins.MinecraftMixin",
     "mixins.MouseHandlerMixin",
-    "mixins.ScreenEffectRendererMixin"
+    "mixins.ScreenEffectRendererMixin",
+    "mixins.SoundEngineMixin"
   ],
   "mixins": [
     "accessors.ServerboundInteractPacketAccessor",
