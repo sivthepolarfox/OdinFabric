@@ -17,11 +17,6 @@ import java.util.Optional;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin {
-
-    @Shadow
-    @Nullable
-    public abstract InterpolationHandler getInterpolation();
-
     @Shadow
     private Vec3 position;
 
