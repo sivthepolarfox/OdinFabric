@@ -17,4 +17,6 @@ abstract class EntityEvent(val entity: Entity) : CancellableEvent() {
     class SetItemSlot(entity: Entity, val slot: EquipmentSlot, val stack: ItemStack) : EntityEvent(entity)
 
     class SetData(entity: Entity, val synchedDataValues: List<SynchedEntityData.DataValue<*>>) : EntityEvent(entity)
+
+    class Event(entity: Entity, val id: Byte) : EntityEvent(entity)
 }

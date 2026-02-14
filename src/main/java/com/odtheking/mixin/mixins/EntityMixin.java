@@ -5,7 +5,6 @@ import com.odtheking.odin.features.impl.dungeon.Highlight;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.InterpolationHandler;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -58,5 +57,14 @@ public abstract class EntityMixin {
     private void onSetOnGround(boolean onGround, CallbackInfo ci) {
         Entity entity = (Entity)(Object)this;
         new EntityEvent.Move(entity, Vec3.ZERO, 0f, 0f, onGround).postAndCatch();
+    }
+
+    @Inject(
+            method = "handleEntityEvent",
+            at = @At("HEAD")
+    )
+    private void onHandleEntityEvent(byte id, CallbackInfo ci) {
+        Entity entity = (Entity)(Object)this;
+        new EntityEvent.Event(entity, id).postAndCatch();
     }
 }
