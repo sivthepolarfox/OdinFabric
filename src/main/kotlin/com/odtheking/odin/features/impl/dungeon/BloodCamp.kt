@@ -33,13 +33,13 @@ object BloodCamp : Module(
 ) {
     private val predictionDropdown by DropdownSetting("Prediction Dropdown", true)
     private val movePrediction by BooleanSetting("Move Prediction", true, desc = "Predicts when watcher will move after its initial spawns. Only works on f7.").withDependency { predictionDropdown }
-    private val moveTime by BooleanSetting("Move Message", true, desc = "Sends a message indicating when the watcher will move.").withDependency { movePrediction && predictionDropdown }
+    private val sendMoveTime by BooleanSetting("Move Message", true, desc = "Sends a message indicating when the watcher will move.").withDependency { movePrediction && predictionDropdown }
     private val partyMoveTime by BooleanSetting("Party Move Message", false, desc = "Sends a message indicating when the watcher will move to party members.").withDependency { movePrediction && predictionDropdown }
     private val killTitle by BooleanSetting("Kill Title", true, desc = "Shows a title for when to kill the initial spawns.").withDependency { movePrediction && predictionDropdown }
 
     private val moveTimer by HUD("Move HUD", "Displays the time until the watcher moves.") { example ->
         if (example) return@HUD textDim("Move Timer: 0.50s", 0, 0, Colors.MINECRAFT_RED)
-        finalTime?.let { textDim("Move Timer: ${((it - normalTickTime) * 0.05).toFixed()}s", 0, 0, Colors.MINECRAFT_RED) } ?: return@HUD 0 to 0
+        moveTimeSeconds?.let { textDim("Move Timer: ${it.toFixed()}s", 0, 0, Colors.MINECRAFT_RED) } ?: return@HUD 0 to 0
     }.withDependency { movePrediction && predictionDropdown }
 
     private val assistDropdown by DropdownSetting("Blood Assist Dropdown", true)
@@ -115,14 +115,14 @@ object BloodCamp : Module(
                     else -> return@on
                 } + (ceil((System.currentTimeMillis() - startTime) / 1000f) - moveTicks) / 2f - 0.6f
                 if (predictionTicks !in 20f..40f) return@on
-                if (partyMoveTime) sendCommand("pc Watcher will move in ${(predictionTicks * 0.05f).toFixed()}s.")
-                if (moveTime) modMessage("Watcher will move in ${(predictionTicks * 0.05f).toFixed()}s.")
+                moveTimeSeconds = predictionTicks * 0.05f
+                if (partyMoveTime) sendCommand("pc Watcher will move in ${moveTimeSeconds?.toFixed()}s.")
+                if (sendMoveTime) modMessage("Watcher will move in ${moveTimeSeconds?.toFixed()}s.")
                 val moveTime = ((predictionTicks - moveTicks) * 20 - 3).toInt()
-                finalTime = normalTickTime + moveTime
 
                 schedule(moveTime) {
                     if (killTitle) alert("Kill Mobs")
-                    finalTime = null
+                    moveTimeSeconds = null
                 }
             }
         }
@@ -142,7 +142,10 @@ object BloodCamp : Module(
             if (entity.id == currentWatcherEntity?.id) currentWatcherEntity = null
         }
 
-        on<TickEvent.Server> { currentTickTime += 50 }
+        on<TickEvent.Server> {
+            currentTickTime += 50
+            moveTimeSeconds?.let { moveTimeSeconds = it - 0.05f }
+        }
 
         on<WorldEvent.Load> {
             currentWatcherEntity = null
@@ -150,7 +153,7 @@ object BloodCamp : Module(
             renderDataMap.clear()
             currentTickTime = 0
             firstSpawns = true
-            finalTime = null
+            moveTimeSeconds = null
             startTime = null
         }
 
@@ -204,7 +207,7 @@ object BloodCamp : Module(
     }
 
     private var startTime: Pair<Long, Long>? = null
-    private var finalTime: Long? = null
+    private var moveTimeSeconds: Float? = null
     private var currentTickTime = 0L
     private inline val normalTickTime get() = currentTickTime / 50
 
