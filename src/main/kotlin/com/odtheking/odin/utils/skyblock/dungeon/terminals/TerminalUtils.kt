@@ -7,13 +7,13 @@ import com.odtheking.odin.events.TerminalEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.EventPriority
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.events.core.onSend
 import com.odtheking.odin.features.impl.floor7.TerminalSolver
 import com.odtheking.odin.features.impl.floor7.termsim.TermSimGUI
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler.TerminalHandler
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
-import net.minecraft.network.protocol.game.*
+import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket
+import net.minecraft.network.protocol.game.ServerboundContainerClickPacket
 import net.minecraft.world.inventory.ClickType
 import net.minecraft.world.item.ItemStack
 
@@ -28,10 +28,10 @@ object TerminalUtils {
         private set
 
     init {
-        onReceive<ClientboundOpenScreenPacket> (EventPriority.HIGHEST) {
-            val windowName = title.string ?: return@onReceive
+        on<GuiEvent.Open> (EventPriority.HIGHEST) {
+            val windowName = screen.title.string ?: return@on
             currentTerm?.let { if (!it.isClicked && it.windowCount <= 2) leftTerm() }
-            val newType = TerminalTypes.entries.find { it.regex.matches(windowName) } ?: return@onReceive
+            val newType = TerminalTypes.entries.find { it.regex.matches(windowName) } ?: return@on
 
             if (newType != currentTerm?.type) newType.openHandler(windowName)?.let {
                 currentTerm = it
@@ -45,8 +45,7 @@ object TerminalUtils {
             currentTerm?.updateSlot(this)
         }
 
-        onReceive<ClientboundContainerClosePacket> { leftTerm() }
-        onSend<ServerboundContainerClosePacket> { leftTerm() }
+        on<GuiEvent.Close> { leftTerm() }
 
         onSend<ServerboundContainerClickPacket> {
             lastClickTime = System.currentTimeMillis()
@@ -80,11 +79,11 @@ object TerminalUtils {
             it.cancel()
         }
 
-        onReceive<ClientboundContainerSetSlotPacket> (EventPriority.HIGH) {
-            val termSimScreen = mc.screen as? TermSimGUI ?: return@onReceive
-            if (slot !in 0 until termSimScreen.size) return@onReceive
-            item?.let { item -> mc.player?.inventoryMenu?.setItem(slot, stateId, item) }
-            it.cancel()
+        on<GuiEvent.SlotUpdate> (EventPriority.HIGH) {
+            val termSimScreen = mc.screen as? TermSimGUI ?: return@on
+            if (packet.slot !in 0 until termSimScreen.size) return@on
+            packet.item?.let { item -> mc.player?.inventoryMenu?.setItem(packet.slot, packet.stateId, item) }
+            cancel()
         }
     }
 
