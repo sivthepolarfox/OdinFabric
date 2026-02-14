@@ -28,6 +28,7 @@ class BlockInteractEvent(val pos: BlockPos) : CancellableEvent()
 class EntityInteractEvent(val pos: Vec3, val entity: Entity) : CancellableEvent()
 
 class ChatPacketEvent(val value: String, val component: Component) : Event() // mixin instead of packet (still needs to run before vanilla processing for hideMessage()
+class OverlayPacketEvent(val value: String, val component: Component) : Event()
 class MessageSentEvent(val message: String) : CancellableEvent()
 
 class RenderBossBarEvent(val bossBar: BossEvent) : CancellableEvent()

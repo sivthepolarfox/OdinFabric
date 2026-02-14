@@ -85,7 +85,9 @@ object EventDispatcher {
         }
 
         onReceive<ClientboundSystemChatPacket> {
-            if (!overlay) content?.string?.noControlCodes?.let { ChatPacketEvent(it, content).postAndCatch() }
+            content?.string?.noControlCodes?.let {
+                (if (overlay) OverlayPacketEvent(it, content) else ChatPacketEvent(it, content)).postAndCatch()
+            }
         }
     }
 
