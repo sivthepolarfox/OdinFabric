@@ -65,15 +65,18 @@ object PlayerSize : Module(
     )
 
     @JvmStatic
-    fun preRenderCallbackScaleHook(entityRenderer: AvatarRenderState, matrix: PoseStack) {
-        val gameProfile = entityRenderer.getData(GAME_PROFILE_KEY) ?: return
+    fun preRenderCallbackScaleHook(renderState: AvatarRenderState, matrix: PoseStack) {
+        val gameProfile = renderState.getData(GAME_PROFILE_KEY) ?: return
+
         if (enabled && gameProfile.id == mc.player?.gameProfile?.id && !randoms.containsKey(gameProfile.id.toString())) {
             if (devSizeY < 0) matrix.translate(0f, devSizeY * 2, 0f)
             matrix.scale(devSizeX, devSizeY, devSizeZ)
         }
+
         if (!randoms.containsKey(gameProfile.id.toString())) return
         if (!devSize && gameProfile.id == mc.player?.gameProfile?.id) return
         val random = randoms[gameProfile.id.toString()] ?: return
+
         if (random.scale[1] < 0) matrix.translate(0f, random.scale[1] * 2, 1f)
         matrix.scale(random.scale[0], random.scale[1], random.scale[2])
     }
