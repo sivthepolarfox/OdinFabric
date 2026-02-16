@@ -6,6 +6,7 @@ import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.EntityEvent
 import com.odtheking.odin.events.PlayerTeamEvent
 import com.odtheking.odin.events.RoomEnterEvent
+import com.odtheking.odin.events.TabListUpdateEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.EventPriority
@@ -96,7 +97,7 @@ object DungeonListener {
             }
         }
 
-        onReceive<ClientboundTabListPacket> {
+        on<TabListUpdateEvent> {
             Blessing.entries.forEach { blessing ->
                 blessing.regex.find(footer?.string ?: return@forEach)?.let { blessing.current = romanToInt(it.groupValues[1]) }
             }
