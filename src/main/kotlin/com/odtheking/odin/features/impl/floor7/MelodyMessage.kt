@@ -4,10 +4,10 @@ import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.StringSetting
 import com.odtheking.odin.events.ChatPacketEvent
-import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.TerminalEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
+import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.features.impl.floor7.termsim.TermSimGUI
 import com.odtheking.odin.features.impl.render.ClickGUIModule
@@ -78,8 +78,8 @@ object MelodyMessage : Module(
             if (broadcast || melodyProgress) onChatMessage(value)
         }
 
-        on<GuiEvent.SlotUpdate> {
-            if (broadcast || melodyProgress) onSlotUpdate(packet)
+        onReceive<ClientboundContainerSetSlotPacket> {
+            if (broadcast || melodyProgress) onSlotUpdate(this)
         }
 
         on<WorldEvent.Load> {
