@@ -10,7 +10,7 @@ import net.minecraft.world.phys.Vec3
 abstract class EntityEvent(val entity: Entity) : CancellableEvent() {
     class Add(entity: Entity) : EntityEvent(entity)
 
-    class Remove(entity: Entity, val reason: Entity.RemovalReason) : EntityEvent(entity)
+    class Remove(entity: Entity) : EntityEvent(entity)
 
     class Move(entity: Entity, val newPos: Vec3, val yRot: Float, val xRot: Float, val onGround: Boolean) : EntityEvent(entity)
 

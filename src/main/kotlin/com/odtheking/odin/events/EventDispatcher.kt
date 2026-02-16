@@ -11,6 +11,7 @@ import com.odtheking.odin.utils.noControlCodes
 import com.odtheking.odin.utils.render.RenderBatchManager
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.isSecret
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
@@ -52,6 +53,10 @@ object EventDispatcher {
         ClientReceiveMessageEvents.ALLOW_GAME.register { text, overlay ->
             if (overlay) return@register true
             !ChatManager.shouldCancelMessage(text)
+        }
+
+        ClientEntityEvents.ENTITY_UNLOAD.register { entity, _ ->
+            EntityEvent.Remove(entity).postAndCatch()
         }
 
         onReceive<ClientboundTakeItemEntityPacket> {
