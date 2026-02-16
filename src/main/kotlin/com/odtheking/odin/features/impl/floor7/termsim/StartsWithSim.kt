@@ -38,7 +38,7 @@ class StartsWithSim(private val letter: String = listOf("A", "B", "C", "G", "D",
     private fun getLetterItemStack(filterNot: Boolean = false): ItemStack {
         val matchingItem = BuiltInRegistries.ITEM
             .filter { item ->
-                val id = item?.name?.string ?: return@filter false
+                val id = item?.defaultInstance?.hoverName?.string ?: return@filter false
                 id.startsWith(letter, true) != filterNot && !id.contains("pane", true) && item != Items.AIR
             }.randomOrNull() ?: return ItemStack.EMPTY
 
