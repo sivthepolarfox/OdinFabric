@@ -33,6 +33,7 @@
     "mixins.EntityMixin",
     "mixins.LevelChunkMixin",
     "mixins.LivingEntityMixin",
+    "mixins.ScoreboardMixin",
     "mixins.SynchedEntityDataMixin",
     "mixins.YggdrasilSignatureIgnoreMixin"
   ]

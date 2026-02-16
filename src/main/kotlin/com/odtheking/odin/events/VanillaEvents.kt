@@ -36,3 +36,4 @@ class MessageSentEvent(val message: String) : CancellableEvent()
 class RenderBossBarEvent(val bossBar: BossEvent) : CancellableEvent()
 
 class ParticleAddEvent(val particle: ParticleType<*>, val overrideDelimiter: Boolean, val alwaysShow: Boolean, val pos: Vec3, val delta: Vec3) : CancellableEvent()
+class GameTimeUpdateEvent(val gameTime: Long, val dayTime: Long, val newShouldTickDayTime: Boolean) : Event()

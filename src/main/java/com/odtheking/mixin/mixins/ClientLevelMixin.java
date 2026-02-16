@@ -1,6 +1,7 @@
 package com.odtheking.mixin.mixins;
 
 import com.odtheking.odin.events.EntityEvent;
+import com.odtheking.odin.events.GameTimeUpdateEvent;
 import com.odtheking.odin.events.ParticleAddEvent;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.ParticleOptions;
@@ -31,5 +32,13 @@ public class ClientLevelMixin {
         Vec3 pos = new Vec3(d, e, f);
         Vec3 delta = new Vec3(g, h, i);
         if (new ParticleAddEvent(particleOptions.getType(), overrideDelimiter, alwaysShow, pos, delta).postAndCatch()) ci.cancel();
+    }
+
+    @Inject(
+            method = "setTimeFromServer",
+            at = @At("HEAD")
+    )
+    private void onSetTimeFromServer(long l, long m, boolean bl, CallbackInfo ci) {
+        new GameTimeUpdateEvent(l, m, bl).postAndCatch();
     }
 }

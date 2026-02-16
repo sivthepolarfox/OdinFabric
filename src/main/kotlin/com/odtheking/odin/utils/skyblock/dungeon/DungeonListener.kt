@@ -4,6 +4,7 @@ import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.OdinMod.scope
 import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.EntityEvent
+import com.odtheking.odin.events.PlayerTeamEvent
 import com.odtheking.odin.events.RoomEnterEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.WorldEvent
@@ -81,8 +82,8 @@ object DungeonListener {
             getDungeonPuzzles(tabListEntries)
         }
 
-        onReceive<ClientboundSetPlayerTeamPacket> {
-            val text = parameters?.getOrNull()?.let { it.playerPrefix?.string?.plus(it.playerSuffix?.string).noControlCodes } ?: return@onReceive
+        on<PlayerTeamEvent.UpdateParameters> {
+            val text = (team.playerPrefix.string + team.playerSuffix.string).noControlCodes
 
             floorRegex.find(text)?.groupValues?.get(1)?.let {
                 if (floor == null) scope.launch(Dispatchers.IO) { paul = hasBonusPaulScore() }
