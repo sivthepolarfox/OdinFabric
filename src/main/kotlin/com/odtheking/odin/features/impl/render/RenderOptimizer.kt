@@ -3,13 +3,12 @@ package com.odtheking.odin.features.impl.render
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.events.EntityEvent
+import com.odtheking.odin.events.ParticleAddEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.texture
 import net.minecraft.core.particles.ParticleTypes
-import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.EquipmentSlot
@@ -57,9 +56,9 @@ object RenderOptimizer : Module(
             }
         }
 
-        onReceive<ClientboundLevelParticlesPacket> {
+        on<ParticleAddEvent> {
             if (disableExplosion && particle == ParticleTypes.EXPLOSION || particle == ParticleTypes.EXPLOSION_EMITTER)
-                it.cancel()
+                cancel()
         }
 
         on<EntityEvent.SetItemSlot> {

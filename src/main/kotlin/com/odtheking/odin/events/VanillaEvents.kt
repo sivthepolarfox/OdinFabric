@@ -5,6 +5,8 @@ import com.odtheking.odin.events.core.CancellableEvent
 import com.odtheking.odin.events.core.Event
 import net.minecraft.client.resources.sounds.Sound
 import net.minecraft.core.BlockPos
+import net.minecraft.core.particles.ParticleOptions
+import net.minecraft.core.particles.ParticleType
 import net.minecraft.network.chat.Component
 import net.minecraft.sounds.SoundSource
 import net.minecraft.world.BossEvent
@@ -32,3 +34,5 @@ class OverlayPacketEvent(val value: String, val component: Component) : Event()
 class MessageSentEvent(val message: String) : CancellableEvent()
 
 class RenderBossBarEvent(val bossBar: BossEvent) : CancellableEvent()
+
+class ParticleAddEvent(val particle: ParticleType<*>, val overrideDelimiter: Boolean, val alwaysShow: Boolean, val pos: Vec3, val delta: Vec3) : CancellableEvent()
