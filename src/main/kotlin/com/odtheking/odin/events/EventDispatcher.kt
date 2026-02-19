@@ -16,7 +16,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents
-import net.minecraft.network.protocol.game.ClientboundSystemChatPacket
 import net.minecraft.network.protocol.game.ClientboundTakeItemEntityPacket
 import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket
 import net.minecraft.sounds.SoundEvents
@@ -50,9 +49,15 @@ object EventDispatcher {
             mc.level?.let { RenderEvent.Last(context).postAndCatch() }
         }
 
+        ClientReceiveMessageEvents.MODIFY_GAME.register { component, overlay ->
+            if (!overlay) return@register component
+            component.string.noControlCodes.let { OverlayPacketEvent(it, component).postAndCatch() }
+            return@register component
+        }
+
         ClientReceiveMessageEvents.ALLOW_GAME.register { text, overlay ->
             if (overlay) return@register true
-            !ChatManager.shouldCancelMessage(text)
+            !(ChatManager.shouldCancelMessage(text) || text.string.noControlCodes.let { ChatPacketEvent(it, text).postAndCatch() })
         }
 
         ClientEntityEvents.ENTITY_UNLOAD.register { entity, _ ->
@@ -87,12 +92,6 @@ object EventDispatcher {
                 hitResult.blockPos,
                 mc.level?.getBlockState(hitResult.blockPos)?.takeIf { isSecret(it, hitResult.blockPos) } ?: return@onSend
             ).postAndCatch()
-        }
-
-        onReceive<ClientboundSystemChatPacket> {
-            content?.string?.noControlCodes?.let {
-                (if (overlay) OverlayPacketEvent(it, content) else ChatPacketEvent(it, content)).postAndCatch()
-            }
         }
     }
 
